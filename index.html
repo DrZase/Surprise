@@ -370,7 +370,7 @@
     </div>
     <div class="terminal-body">
       <div class="prompt-line">
-        <span class="prompt-user">ivan@yana</span><span class="prompt-symbol">:~$ </span><span id="typed-command"></span><span class="cursor" id="cursor">▌</span>
+        <span class="prompt-user">you@yana</span><span class="prompt-symbol">:~$ </span><span id="typed-command"></span><span class="cursor" id="cursor">▌</span>
       </div>
       <div id="log"></div>
     </div>
@@ -400,8 +400,8 @@
     '> аптайм: 1 месяц · сбоев: 0'
   ];
 
-  const FINAL_MESSAGE = 'Это только начало <3';
-  const CAPTION_TEXT = 'Люблю тебя <3';
+  const FINAL_MESSAGE = 'Это только начало ♡';
+  const CAPTION_TEXT = 'Люблю тебя ♡';
   const ERROR_MESSAGE = "1508 It's still early";
 
   // анимация всегда идёт на полной скорости, независимо от системной
@@ -414,16 +414,36 @@
   function typeText(el, text, speed){
     return new Promise(resolve => {
       let i = 0;
-      if(reduceMotion){ el.textContent = text; return resolve(); }
-      (function step(){
-        if(i < text.length){
-          el.textContent += text[i];
-          i++;
-          let delay = speed * random(0.7, 1.5);
-          if(Math.random() < 0.06) delay += random(200, 450);
-          setTimeout(step, delay);
-        } else resolve();
-      })();
+
+      // Всегда начинаем печать с чистого состояния.
+      el.textContent = '';
+
+      if(reduceMotion){
+        el.textContent = text;
+        resolve();
+        return;
+      }
+
+      function step(){
+        if(i >= text.length){
+          // Жёстко фиксируем конечное значение.
+          el.textContent = text;
+          resolve();
+          return;
+        }
+
+        i++;
+
+        // Не используем +=: DOM всегда получает точную версию строки.
+        el.textContent = text.slice(0, i);
+
+        let delay = speed * random(0.7, 1.5);
+        if(Math.random() < 0.06) delay += random(200, 450);
+
+        setTimeout(step, delay);
+      }
+
+      step();
     });
   }
 
@@ -445,7 +465,13 @@
     }
   }
 
+  let sequenceStarted = false;
+
   async function runSequence(){
+    // Защита от повторного запуска сценария.
+    if(sequenceStarted) return;
+    sequenceStarted = true;
+
     const cmdEl = document.getElementById('typed-command');
     const unlocked = new Date() >= UNLOCK_DATE;
     const commandText = unlocked ? COMMAND : COMMAND_LOCKED;
@@ -503,7 +529,7 @@
       try {
         // Музыка уже играет muted. После 100% просто снимаем mute.
         music.muted = false;
-        music.volume = 0.05;
+        music.volume = 0.2;
       } catch (error) {
         // Любая ошибка аудио не должна прерывать runSequence().
         console.warn('Музыка недоступна:', error);
@@ -537,10 +563,17 @@
     await wait(1000);
     document.getElementById('caption').classList.add('visible');
     await wait(700);
-    await typeText(document.getElementById('caption-text'), CAPTION_TEXT, 90);
+
+    const captionText = document.getElementById('caption-text');
+    await typeText(captionText, CAPTION_TEXT, 90);
+
+    // Гарантируем правильный итоговый текст после завершения анимации.
+    captionText.textContent = CAPTION_TEXT;
   }
 
   document.getElementById('intro').addEventListener('click', async () => {
+    if(sequenceStarted) return;
+
     const intro = document.getElementById('intro');
     intro.classList.add('hide');
     await wait(400);
