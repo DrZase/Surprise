@@ -370,7 +370,7 @@
     </div>
     <div class="terminal-body">
       <div class="prompt-line">
-        <span class="prompt-user">you@yana</span><span class="prompt-symbol">:~$ </span><span id="typed-command"></span><span class="cursor" id="cursor">▌</span>
+        <span class="prompt-user">ivan@yana</span><span class="prompt-symbol">:~$ </span><span id="typed-command"></span><span class="cursor" id="cursor">▌</span>
       </div>
       <div id="log"></div>
     </div>
@@ -400,8 +400,8 @@
     '> аптайм: 1 месяц · сбоев: 0'
   ];
 
-  const FINAL_MESSAGE = 'Это только начало ♡';
-  const CAPTION_TEXT = 'Люблю тебя ♡';
+  const FINAL_MESSAGE = 'Это только начало <3';
+  const CAPTION_TEXT = 'Люблю тебя <3';
   const ERROR_MESSAGE = "1508 It's still early";
 
   // анимация всегда идёт на полной скорости, независимо от системной
@@ -503,7 +503,7 @@
       try {
         // Музыка уже играет muted. После 100% просто снимаем mute.
         music.muted = false;
-        music.volume = 0.2;
+        music.volume = 0.05;
       } catch (error) {
         // Любая ошибка аудио не должна прерывать runSequence().
         console.warn('Музыка недоступна:', error);
